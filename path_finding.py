@@ -56,10 +56,12 @@ class Spot:
 
         def is_end(self):
             return self.colour == END
+        
+        def is_path(self):
+            return self.colour == PATH
 
         def reset(self):
             return self.colour == BACKGROUND
-
 
         def make_closed(self):
             # Closed squares (already visited)
@@ -97,7 +99,7 @@ class Spot:
             if self.col < self.total_rows - 1 and not grid[self.row][self.col + 1].is_barrier(): # right
                 self.neighbours.append(grid[self.row][self.col + 1]) 
             
-            if self.row > 0 and not grid[self.row][self.col - 1].is_barrier(): # left
+            if self.col > 0 and not grid[self.row][self.col - 1].is_barrier(): # left
                 self.neighbours.append(grid[self.row][self.col - 1]) 
 
         def __lt__(self, other):
@@ -156,13 +158,17 @@ def draw_grid(win, rows, spot_width):
         pygame.draw.line(win, LINES, (j * gap, 0), (j * gap, spot_width))
         
     pygame.draw.line(win, LINES, (j * gap, 0), (j * gap, spot_width))
-        
-def draw_buttons(win, buttons):
+    
+
+def draw(win, grid, rows, spot_width, buttons, text_info):
+    win.fill(BACKGROUND)
+    for row in grid:
+        for spot in row:
+            spot.draw(win)
+
     for button in buttons:
         button.draw(win)
-    
-    
-    
+
     # instructions
     instructions_font = pygame.font.SysFont('Arial', 15)
     SCREEN.blit(instructions_font.render('1. Select an Algorithm', True, BARRIER), (530, 10))
@@ -171,16 +177,7 @@ def draw_buttons(win, buttons):
     SCREEN.blit(instructions_font.render('4. Click Space to Start', True, BARRIER), (530, 70))
     SCREEN.blit(instructions_font.render('5. Click c to clear', True, BARRIER), (530, 90))
 
-    pygame.display.update()
-
-def draw(win, grid, rows, spot_width, buttons, text_info):
-    win.fill(BACKGROUND)
-    for row in grid:
-        for spot in row:
-            spot.draw(win)
-
     draw_grid(win,rows,spot_width)
-    draw_buttons(win, buttons)
 
     # text info
     pygame.display.update()
@@ -214,7 +211,9 @@ def main(win, spot_width):
     end = None
 
     run = True
+    started = False
     algorithm = None
+    
     while run:
         draw(win, grid, ROWS, spot_width, buttons, text)
         for event in pygame.event.get():
@@ -223,7 +222,8 @@ def main(win, spot_width):
                 run = False             
 
             if pygame.mouse.get_pressed()[0]: # left mouse
-                pos = pygame.mouse.get_pos()
+                pos = pygame.mouse.get_pos() # pos[0] - col | pos[1] - row
+                #col, row = pos
                 row, col = get_clicked_pos(pos, ROWS, spot_width)
 
                 # Select Algorithm
@@ -234,7 +234,7 @@ def main(win, spot_width):
                     buttons[0].make_clicked()
                     
                 # click inside the grid
-                if row <= ROWS and col <= ROWS and algorithm: 
+                if row < ROWS and col < ROWS and algorithm and col >= 0 and row >= 0: 
                     spot = grid[row][col]
                     if not start and spot != end:
                         start = spot
@@ -260,6 +260,13 @@ def main(win, spot_width):
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and start and end:
+                    if started:
+                        for row in grid:
+                            for node in row:
+                                if node.is_open() or node.is_closed() or node.is_path():
+                                    node.reset()
+
+                    started = True
                     for row in grid:
                         for spot in row:
                             spot.update_neighbours(grid)
@@ -271,6 +278,11 @@ def main(win, spot_width):
                         text = [f'Time Spent: {time.strftime("%M:%S.{}".format(str(elapsed % 1)[2:])[:9], time.gmtime(elapsed))}', f'Distance: {size[1]} blocks']
                         buttons[-2] = Button(530, 380,  BUTTON_WIDTH, 40, text[0], BACKGROUND)
                         buttons[-1] = Button(530, 420,  BUTTON_WIDTH, 40, text[1], BACKGROUND)
+                        for row in grid:
+                            for node in row:
+                                if node.is_open() or node.is_closed():
+                                    node.reset()
+
 
                 if event.key == pygame.K_c:
                     start = None
