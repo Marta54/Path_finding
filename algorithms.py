@@ -88,22 +88,25 @@ def Dijkstra(draw, grid, start, end):
             size = reconstruct_path(came_from, end, draw)
             end.make_end()
             start.make_start()
+
             return True, size
         
         visited.add(current)
-        current.make_open()
 
         for neighbour in current.neighbours:
             loc = neighbour.get_pos()
-            distance = current_distance + 1 
+            
             neighbour.make_closed()
             end.make_end()
             start.make_start()
 
-            if distance < distances[loc[0]][loc[1]]:
-                came_from[neighbour] = current
-                distances[loc[0]][loc[1]] = distance
-                heapq.heappush(queue,(distance, neighbour))
+            if neighbour not in visited:
+                neighbour.make_open()
+                distance = current_distance + 1 
+                if distance < distances[loc[0]][loc[1]]:
+                    came_from[neighbour] = current
+                    distances[loc[0]][loc[1]] = distance
+                    heapq.heappush(queue,(distance, neighbour))
         draw()
 
     if current != start:
