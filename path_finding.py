@@ -1,6 +1,6 @@
 import pygame
 import time
-from algorithms import A_star
+from algorithms import A_star, Dijkstra
 
 pygame.font.init()
 # create grid
@@ -15,6 +15,7 @@ BUTTON_WIDTH = 200
 BUTTON_HEIGHT = 50
 BUTTON_X = 550
 BUTTON_Y = 130
+HEIGHT_BETWEEN_BUTTONS = 10
 
 # colours
 BARRIER = (0, 0, 0)        
@@ -200,9 +201,9 @@ def main(win, spot_width):
     text = ['Time Spent: ', 'Distance: ']
     
     buttons = [Button(BUTTON_X, BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT, 'A*', BARRIER),
-               Button(BUTTON_X, BUTTON_Y + (BUTTON_HEIGHT + 10), BUTTON_WIDTH, BUTTON_HEIGHT, 'Dijkstra - not yet', BARRIER),
-               Button(BUTTON_X, BUTTON_Y + 2 * (BUTTON_HEIGHT + 10), BUTTON_WIDTH, BUTTON_HEIGHT, 'Wavefront - not yet', BARRIER),
-               Button(BUTTON_X, BUTTON_Y + 3 * (BUTTON_HEIGHT + 10), BUTTON_WIDTH, BUTTON_HEIGHT, 'BFS - not yet', BARRIER),
+               Button(BUTTON_X, BUTTON_Y + (BUTTON_HEIGHT + HEIGHT_BETWEEN_BUTTONS), BUTTON_WIDTH, BUTTON_HEIGHT, 'Dijkstra', BARRIER),
+               Button(BUTTON_X, BUTTON_Y + 2 * (BUTTON_HEIGHT + HEIGHT_BETWEEN_BUTTONS), BUTTON_WIDTH, BUTTON_HEIGHT, 'DFS - not yet', BARRIER),
+               Button(BUTTON_X, BUTTON_Y + 3 * (BUTTON_HEIGHT + HEIGHT_BETWEEN_BUTTONS), BUTTON_WIDTH, BUTTON_HEIGHT, 'BFS - not yet', BARRIER),
                Button(530, 380,  BUTTON_WIDTH, 40, text[0], BACKGROUND),
                Button(530, 420,  BUTTON_WIDTH, 40, text[1], BACKGROUND)
                ]
@@ -231,7 +232,17 @@ def main(win, spot_width):
                 # A*
                 if (pos[1] < BUTTON_Y + BUTTON_HEIGHT and pos[1] > BUTTON_Y) and (pos[0] > BUTTON_X and pos[0] < BUTTON_X + BUTTON_WIDTH):
                     algorithm = 'A*'
+                    for b in buttons:
+                        b.reset()
                     buttons[0].make_clicked()
+
+
+                # Dijkstra
+                if (pos[1] < BUTTON_Y + 2 * BUTTON_HEIGHT + HEIGHT_BETWEEN_BUTTONS and pos[1] > BUTTON_Y + BUTTON_HEIGHT + HEIGHT_BETWEEN_BUTTONS) and (pos[0] > BUTTON_X and pos[0] < BUTTON_X + BUTTON_WIDTH):
+                    algorithm = 'Dij'
+                    for b in buttons:
+                        b.reset()
+                    buttons[1].make_clicked()
                     
                 # click inside the grid
                 if row < ROWS and col < ROWS and algorithm and col >= 0 and row >= 0: 
@@ -271,6 +282,8 @@ def main(win, spot_width):
                         for spot in row:
                             spot.update_neighbours(grid)
 
+                    # play the algorithms
+                    # A*
                     if algorithm == 'A*':
                         t0 = time.time()
                         size = A_star(lambda: draw(win, grid, ROWS, spot_width, buttons,text), grid, start, end)
@@ -282,6 +295,19 @@ def main(win, spot_width):
                             for node in row:
                                 if node.is_open() or node.is_closed():
                                     node.reset()
+                    # Dijkstra
+                    elif algorithm == 'Dij':
+                        t0 = time.time()
+                        size = Dijkstra(lambda: draw(win, grid, ROWS, spot_width, buttons,text), grid, start, end)
+                        elapsed = time.time() - t0
+                        text = [f'Time Spent: {time.strftime("%M:%S.{}".format(str(elapsed % 1)[2:])[:9], time.gmtime(elapsed))}', f'Distance: {size[1]} blocks']
+                        buttons[-2] = Button(530, 380,  BUTTON_WIDTH, 40, text[0], BACKGROUND)
+                        buttons[-1] = Button(530, 420,  BUTTON_WIDTH, 40, text[1], BACKGROUND)
+                        for row in grid:
+                            for node in row:
+                                if node.is_open() or node.is_closed():
+                                    node.reset()
+
 
 
                 if event.key == pygame.K_c:
