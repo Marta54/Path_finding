@@ -1,5 +1,6 @@
 # Path Finding Visualization
 
+<<<<<<< HEAD
 This is a path visualization tool that demonstrates four popular pathfinding algorithms: A*, Dijkstra, Depth-First Search (DFS), and Breadth-First Search (BFS). The tool allows you to create a grid, place obstacles, and find the shortest path between two points using different algorithms.
 
 ## Features 
@@ -66,3 +67,14 @@ pip install pygame==2.2.0
 3. Run the path_finding.py file
 4. Follow the instructions on the app
 
+=======
+### A* 
+
+
+### Dijkstra
+
+### DFS
+
+
+### BFS
+>>>>>>> abc5116649e09d295a0c3de3105e6fc1ee93bfae
