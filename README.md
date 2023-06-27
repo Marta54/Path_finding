@@ -1,7 +1,5 @@
 # Path Finding Visualization
 
-# Path Finding Visualization
-
 This is a path visualization tool that demonstrates four popular pathfinding algorithms: A*, Dijkstra, Depth-First Search (DFS), and Breadth-First Search (BFS). The tool allows you to create a grid, place obstacles, and find the shortest path between two points using different algorithms.
 
 ## Features 
