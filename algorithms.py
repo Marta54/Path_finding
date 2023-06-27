@@ -1,5 +1,6 @@
 from queue import PriorityQueue
 import heapq
+from collections import deque
 import pygame
 
 def h(p1,p2):
@@ -108,8 +109,74 @@ def Dijkstra(draw, grid, start, end):
                     distances[loc[0]][loc[1]] = distance
                     heapq.heappush(queue,(distance, neighbour))
         draw()
+    return False, None
 
-    if current != start:
-        current.make_closed()
+def bfs(draw, grid, start, end):
+    visited = set([start])    
+    queue = deque([start])
+    came_from = {}
+
+    while queue:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+
+        current_node = queue.popleft()
+
+        if current_node == end:
+            size = reconstruct_path(came_from, end, draw)
+            end.make_end()
+            start.make_start()
+            return True, size
+
+        # visited.add(current_node)
+
+        nodes = current_node.neighbours
+        for neighbour in nodes:
+            neighbour.make_closed()
+            end.make_end()
+            start.make_start()
+
+            if neighbour not in visited:
+                neighbour.make_open()
+                queue.append(neighbour)
+                visited.add(neighbour)
+                came_from[neighbour] = current_node
+
+        draw()
+
+    return False, None
+
+def dfs(draw, grid, start, end):
+    stack = [start]
+    visited = set([start])
+    came_from = {}
+
+    while stack:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+        
+        current = stack.pop()
+    
+        if current == end:
+            size = reconstruct_path(came_from, end, draw)
+            end.make_end()
+            start.make_start()
+
+            return True, size
+
+        for neighbour in current.neighbours:
+            current.reset()
+            neighbour.make_closed()
+            end.make_end()
+            start.make_start()
+
+            if neighbour not in visited:
+                neighbour.make_open()
+                stack.append(neighbour)
+                visited.add(neighbour)
+                came_from[neighbour] = current
+        draw()
 
     return False, None

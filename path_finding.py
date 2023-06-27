@@ -1,6 +1,6 @@
 import pygame
 import time
-from algorithms import A_star, Dijkstra
+from algorithms import A_star, Dijkstra, bfs, dfs
 
 pygame.font.init()
 # create grid
@@ -202,8 +202,8 @@ def main(win, spot_width):
     
     buttons = [Button(BUTTON_X, BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT, 'A*', BARRIER),
                Button(BUTTON_X, BUTTON_Y + (BUTTON_HEIGHT + HEIGHT_BETWEEN_BUTTONS), BUTTON_WIDTH, BUTTON_HEIGHT, 'Dijkstra', BARRIER),
-               Button(BUTTON_X, BUTTON_Y + 2 * (BUTTON_HEIGHT + HEIGHT_BETWEEN_BUTTONS), BUTTON_WIDTH, BUTTON_HEIGHT, 'DFS - not yet', BARRIER),
-               Button(BUTTON_X, BUTTON_Y + 3 * (BUTTON_HEIGHT + HEIGHT_BETWEEN_BUTTONS), BUTTON_WIDTH, BUTTON_HEIGHT, 'BFS - not yet', BARRIER),
+               Button(BUTTON_X, BUTTON_Y + 2 * (BUTTON_HEIGHT + HEIGHT_BETWEEN_BUTTONS), BUTTON_WIDTH, BUTTON_HEIGHT, 'DFS', BARRIER),
+               Button(BUTTON_X, BUTTON_Y + 3 * (BUTTON_HEIGHT + HEIGHT_BETWEEN_BUTTONS), BUTTON_WIDTH, BUTTON_HEIGHT, 'BFS', BARRIER),
                Button(530, 380,  BUTTON_WIDTH, 40, text[0], BACKGROUND),
                Button(530, 420,  BUTTON_WIDTH, 40, text[1], BACKGROUND)
                ]
@@ -243,7 +243,21 @@ def main(win, spot_width):
                     for b in buttons:
                         b.reset()
                     buttons[1].make_clicked()
+
+                # DFS
+                if (pos[1] < BUTTON_Y + 3 * BUTTON_HEIGHT + HEIGHT_BETWEEN_BUTTONS and pos[1] > BUTTON_Y + 2 * BUTTON_HEIGHT + HEIGHT_BETWEEN_BUTTONS) and (pos[0] > BUTTON_X and pos[0] < BUTTON_X + BUTTON_WIDTH):
+                    algorithm = 'dfs'
+                    for b in buttons:
+                        b.reset()
+                    buttons[2].make_clicked()
                     
+                # BFS
+                if (pos[1] < BUTTON_Y + 4 * BUTTON_HEIGHT + HEIGHT_BETWEEN_BUTTONS and pos[1] > BUTTON_Y + 3 * BUTTON_HEIGHT + HEIGHT_BETWEEN_BUTTONS) and (pos[0] > BUTTON_X and pos[0] < BUTTON_X + BUTTON_WIDTH):
+                    algorithm = 'bfs'
+                    for b in buttons:
+                        b.reset()
+                    buttons[3].make_clicked()
+
                 # click inside the grid
                 if row < ROWS and col < ROWS and algorithm and col >= 0 and row >= 0: 
                     spot = grid[row][col]
@@ -291,10 +305,7 @@ def main(win, spot_width):
                         text = [f'Time Spent: {time.strftime("%M:%S.{}".format(str(elapsed % 1)[2:])[:9], time.gmtime(elapsed))}', f'Distance: {size[1]} blocks']
                         buttons[-2] = Button(530, 380,  BUTTON_WIDTH, 40, text[0], BACKGROUND)
                         buttons[-1] = Button(530, 420,  BUTTON_WIDTH, 40, text[1], BACKGROUND)
-                        for row in grid:
-                            for node in row:
-                                if node.is_open() or node.is_closed():
-                                    node.reset()
+                        
                     # Dijkstra
                     elif algorithm == 'Dij':
                         t0 = time.time()
@@ -303,12 +314,29 @@ def main(win, spot_width):
                         text = [f'Time Spent: {time.strftime("%M:%S.{}".format(str(elapsed % 1)[2:])[:9], time.gmtime(elapsed))}', f'Distance: {size[1]} blocks']
                         buttons[-2] = Button(530, 380,  BUTTON_WIDTH, 40, text[0], BACKGROUND)
                         buttons[-1] = Button(530, 420,  BUTTON_WIDTH, 40, text[1], BACKGROUND)
-                        for row in grid:
-                            for node in row:
-                                if node.is_open() or node.is_closed():
-                                    node.reset()
 
+                    # bfs
+                    elif algorithm == 'bfs':
+                        t0 = time.time()
+                        size = bfs(lambda: draw(win, grid, ROWS, spot_width, buttons,text), grid, start, end)
+                        elapsed = time.time() - t0
+                        text = [f'Time Spent: {time.strftime("%M:%S.{}".format(str(elapsed % 1)[2:])[:9], time.gmtime(elapsed))}', f'Distance: {size[1]} blocks']
+                        buttons[-2] = Button(530, 380,  BUTTON_WIDTH, 40, text[0], BACKGROUND)
+                        buttons[-1] = Button(530, 420,  BUTTON_WIDTH, 40, text[1], BACKGROUND)
 
+                    # dfs
+                    elif algorithm == 'dfs':
+                        t0 = time.time()
+                        size = dfs(lambda: draw(win, grid, ROWS, spot_width, buttons,text), grid, start, end)
+                        elapsed = time.time() - t0
+                        text = [f'Time Spent: {time.strftime("%M:%S.{}".format(str(elapsed % 1)[2:])[:9], time.gmtime(elapsed))}', f'Distance: {size[1]} blocks']
+                        buttons[-2] = Button(530, 380,  BUTTON_WIDTH, 40, text[0], BACKGROUND)
+                        buttons[-1] = Button(530, 420,  BUTTON_WIDTH, 40, text[1], BACKGROUND)
+
+                    for row in grid:
+                                for node in row:
+                                    if node.is_open() or node.is_closed():
+                                        node.reset()
 
                 if event.key == pygame.K_c:
                     start = None
