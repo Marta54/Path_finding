@@ -59,8 +59,8 @@ Algorithm to transverse a tree or graph. It is useful to find the shortest path 
 ## Prerequisites
 Before running the program, make sure you have the following installed:
 
-Python 3.x: [Download Python](https://www.python.org/downloads/)
-Pygame library: Run the following command to install Pygame, version 2.2.0.
++ Python 3.x: [Download Python](https://www.python.org/downloads/)
++ Pygame library: Run the following command to install Pygame, version 2.2.0.
 
 ```
 pip install pygame==2.2.0
