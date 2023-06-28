@@ -25,7 +25,7 @@ This algorithm identifies the shortest path from the starting node (A) to the en
 4. In case of a tie, the algorithm chooses the node closer to the end node. 
 5. Repeat the process until you find the end node or there is no more walkable cells.
 
-<img src="Astar.gif" width="600">
+<img src="images/Astar.gif" width="600">
 
 ### Dijkstra
 1. The algorithm begins at the starting node. 
@@ -35,7 +35,7 @@ This algorithm identifies the shortest path from the starting node (A) to the en
 5. consider the current node as visited after considering every neighbour. 
 6. Select the neighbour with the lowest value until you find the end node or there is no more walkable cells.
 
-<img src="dijkstra.gif" width="600">
+<img src="images/dijkstra.gif" width="600">
 
 ### Depth-First Search (DFS)
 Algorithm to transverse a tree or graph. 
@@ -45,7 +45,7 @@ This project implements the iterative version of DFS.
 3. we iterate over the neighbours
 4. if the neighbours were not visited, we add them to the stack. 
 
-<img src="dfs.gif" width="600">
+<img src="images/dfs.gif" width="600">
 
 ### Breadth-First Search (BFS)
 Algorithm to transverse a tree or graph. It is useful to find the shortest path on a unweighted graph. It differs from DFS because it first explores the nodes close by and only after exploring all of these, moves to the next level.
@@ -54,7 +54,7 @@ Algorithm to transverse a tree or graph. It is useful to find the shortest path 
 3. We visit the next element of the queue and add its neighbours to the queue.
 4. We repeat until we find the end or we run out of neighbours to explore.
 
-<img src="bfs.gif" width="600">
+<img src="images/bfs.gif" width="600">
 
 ## Prerequisites
 Before running the program, make sure you have the following installed:
